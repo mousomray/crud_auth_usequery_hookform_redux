@@ -24,6 +24,14 @@ const Login = () => {
     const dispatch = useDispatch();
     const { register, handleSubmit, watch, formState: { errors }, reset } = useForm(); // Define in State
     const { redirectTo, loading } = useSelector((state) => state?.Auth);
+   
+    // Make Password visibility 
+    const [passwordShown, setPasswordShown] = useState(false);
+
+    const togglePassword = (e) => {
+        e.preventDefault()
+        setPasswordShown(!passwordShown);
+    };
 
 
     const onSubmit = async (data) => {
@@ -117,7 +125,7 @@ const Login = () => {
                                 <TextField
                                     required
                                     fullWidth
-                                    type="password"
+                                    type={passwordShown ? "text" : "password"}
                                     id="password"
                                     label="Password"
                                     {...register("password", {
@@ -131,6 +139,8 @@ const Login = () => {
                                 {errors?.password && (
                                     <p style={{ color: 'red' }}>{errors.password.message}</p>
                                 )}
+                                <br />
+                                <Link onClick={togglePassword}>{passwordShown ? 'Hide Password' : 'Show Password'}</Link>
                             </Grid>
 
                         </Grid>

@@ -46,8 +46,6 @@ const Signup = () => {
             navigate("/login")
         } catch (error) {
             console.error("Error submitting data:", error);
-            setIsLoading(false)
-
         }
     };
 

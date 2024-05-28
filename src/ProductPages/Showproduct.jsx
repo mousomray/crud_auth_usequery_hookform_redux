@@ -7,11 +7,15 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import DeleteIcon from '@mui/icons-material/Delete'; // Delete Icon
+import EditIcon from '@mui/icons-material/Edit'; // Edit Icon
+import DetailsIcon from '@mui/icons-material/Details';
 import { Link } from 'react-router-dom'; // Import Link
 import { useDispatch } from 'react-redux'; // Import Dispatch
 import { showproduct, deleteproduct } from "./productapi"; // Import Show and Delete Function 
 import { useQuery } from '@tanstack/react-query' // Import for useQuery 
 import Layout from '../Common/Layout'; // Import Layout
+import Swal from 'sweetalert2'; // Import Sweet Alert 
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -49,11 +53,30 @@ const Showproduct = () => {
         queryFn: getProductdata // This line of code work as same as useEffect()
     })
 
-    // Make Handle For Delete
+    // Make Handle For Delete (Start)
     const handleDelete = async (id) => {
-        await dispatch(deleteproduct(id)) // Call deleteproduct function
-        refetch() // Refetch make to refetch the page
+        // For Sweet Alert
+        const result = await Swal.fire({
+            title: 'Are you sure?',
+            text: 'You will not be able to recover this product!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete it!'
+        });
+        if (result.isConfirmed) {
+            await dispatch(deleteproduct(id));
+            refetch()
+            // After Deletation Message
+            Swal.fire(
+                'Deleted!',
+                'Your product has been deleted',
+                'success'
+            );
+        }
     }
+    // Make Handle For Delete (End)
 
 
     // For Loading 
@@ -97,9 +120,9 @@ const Showproduct = () => {
                                     <StyledTableCell align="center">{row.name}</StyledTableCell>
                                     <StyledTableCell align="center">{row.brand}</StyledTableCell>
                                     <StyledTableCell align="center">{row.price}</StyledTableCell>
-                                    <StyledTableCell align="center"><Link to={`/details/${row._id}`}><button className='btn-primary'>Details</button></Link></StyledTableCell>
-                                    <StyledTableCell align="center"><Link to={`/edit/${row._id}`}><button className='btn-primary'>Edit</button></Link></StyledTableCell>
-                                    <StyledTableCell align="center"><button onClick={() => handleDelete(row._id)} className='btn-danger'>Delete</button></StyledTableCell>
+                                    <StyledTableCell align="center"><Link to={`/details/${row._id}`}><button className='btn-primary'><DetailsIcon/></button></Link></StyledTableCell>
+                                    <StyledTableCell align="center"><Link to={`/edit/${row._id}`}><button className='btn-success'><EditIcon/></button></Link></StyledTableCell>
+                                    <StyledTableCell align="center"><button onClick={() => handleDelete(row._id)} className='btn-danger'><DeleteIcon/></button></StyledTableCell>
                                 </StyledTableRow>
                             ))}
                         </TableBody>

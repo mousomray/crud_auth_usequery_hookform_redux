@@ -1,4 +1,4 @@
-import { createAsyncThunk } from "@reduxjs/toolkit"; //createAsyncThunk handle asynconomous function 
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"; //createAsyncThunk handle asynconomous function 
 import axiosInstance from "../api/api"
 import { toast } from "react-toastify";
 
@@ -32,7 +32,7 @@ export const showproduct = createAsyncThunk("showproduct", async (_, { rejectWit
 });
 
 
-// Call Api for Details Product
+// Call Api for Details Product (Start)
 export const detailsproduct = createAsyncThunk("detailsproduct", async (id, { rejectWithValue }) => {
     try {
       const apiurl = `edit/product/${id}`
@@ -44,6 +44,38 @@ export const detailsproduct = createAsyncThunk("detailsproduct", async (id, { re
       return rejectWithValue(error.response.data);
     }
   });
+
+  // Create Slice For product Details 
+const singledetails = createSlice({
+    name: "singledetails",
+    initialState: {
+        singledata: [],
+        loading: false,
+        error: null,
+
+    },
+
+
+    extraReducers: (builder) => {
+        builder
+
+
+            // Details Product
+            .addCase(detailsproduct.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(detailsproduct.fulfilled, (state, action) => {
+                state.loading = false;
+                state.singledata = action.payload;
+            })
+            .addCase(detailsproduct.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+    },
+});
+ export default singledetails.reducer
+ // Call Api for details product end
 
 
 // Data Fetch For Edit Product 
@@ -77,3 +109,5 @@ export const deleteproduct = createAsyncThunk("deleteproduct", async (id, { reje
         return rejectWithValue(error.response.data);
     }
 });
+
+

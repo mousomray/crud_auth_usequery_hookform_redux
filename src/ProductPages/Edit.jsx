@@ -15,7 +15,7 @@ import Layout from "../Common/Layout"; // Import Layout
 import { useForm } from "react-hook-form"; // Import Hook Form 
 import { useNavigate } from "react-router-dom"; // Import Use Navigate
 import { useState, useEffect } from "react"; // Import Use State
-import { useDispatch } from "react-redux"; // Import Use Dispatch
+import { useSelector, useDispatch } from "react-redux"; // Import Use Dispatch
 import { editproduct, detailsproduct } from "./productapi"; // Import registerUser Function
 import { CircularProgress } from "@mui/material"; // Circle Loader 
 const defaultTheme = createTheme();
@@ -28,6 +28,7 @@ const Edit = () => {
 
     // React Hook Form Area
     const { register, handleSubmit, watch, formState: { errors }, reset } = useForm();
+    const { singledata } = useSelector((state) => state.Single);
     const [image, setImage] = useState(null);
     const [loading, setLoading] = useState(false)
     //console.log(watch((data) => console.log(data)));
@@ -220,11 +221,38 @@ const Edit = () => {
                                         <div style={{ marginBottom: '20px' }}>
                                             <input type="file" onChange={(e) => setImage(e.target.files[0])} name="image" accept="image/*" className="form-control" />
 
-                                            {image !== "" && image !== undefined && image !== null ? (
-                                                <img style={{ height: "180px" }} src={URL.createObjectURL(image)} alt="" className="upload-img" />
+
+                                            {image !== "" &&
+                                                image !== undefined &&
+                                                image !== null ? (
+                                                <img
+                                                    height="180px"
+                                                    src={URL.createObjectURL(image)}
+                                                    alt=""
+                                                    className="upload-img"
+                                                />
                                             ) : (
-                                                <>{image === "" && <p style={{ color: 'white' }}>Drag or drop content here</p>}</>
+                                                <>
+                                                    {image === "" ? (
+                                                        <img
+                                                            height="180px"
+                                                            src={image}
+                                                            alt=""
+                                                            className="upload-img"
+                                                        />
+                                                    ) : (
+                                                        <img
+                                                            height="180px"
+                                                            src={singledata.image}
+                                                            alt=""
+                                                            className="upload-img"
+                                                        />
+                                                    )}
+                                                </>
                                             )}
+
+
+
                                         </div>
                                     </Grid>
                                     {/*Image area end*/}

@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import axiosInstance from '../api/api'
 import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css'
+
 
 const initialState = {
     loading: false,
@@ -133,6 +133,7 @@ export const AuthSlice = createSlice({
                 if (payload?.status === true) {
                     localStorage.setItem("token", payload?.token);
                     localStorage.setItem("name", payload?.user.name);
+                    localStorage.setItem("proimg", payload?.user?.image)
                     state.Logouttoggle = true;
                     state.redirectTo = "/";
                     toast.success(`Hi ${payload?.user.name}, ${payload?.message}`);

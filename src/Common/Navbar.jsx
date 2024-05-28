@@ -22,10 +22,16 @@ import { logout } from '../Auth/authslice';
 const pages = ['Home', 'Addproduct', 'Showproduct'];
 const settings = ['Profile', 'Dashboard', 'Update Password', 'Logout'];
 
+// Function For Profile Picture
+export const profile_pic = (kkr) => {
+    return `https://webskitters-student.onrender.com` + `/user/uploads/image/${kkr}`;
+}
+
 function Navbar() {
     const dispatch = useDispatch();
     const { Logouttoggle } = useSelector((state) => state?.Auth);
     const name = localStorage.getItem("name");
+    const proimg = localStorage.getItem("proimg") // Get Profile picture from local storage
     const navigate = useNavigate()
 
     const handleLogout = () => {
@@ -150,7 +156,11 @@ function Navbar() {
                                 <>
                                     <Tooltip title="Open settings">
                                         <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                                            <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                                            <Avatar alt="Remy Sharp" src={
+                                                proimg
+                                                    ? profile_pic(proimg)
+                                                    : "error"
+                                            } />
                                         </IconButton>
                                     </Tooltip>
                                     <Menu
