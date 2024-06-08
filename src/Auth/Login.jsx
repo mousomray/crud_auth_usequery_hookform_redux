@@ -16,15 +16,15 @@ import Container from '@mui/material/Container';
 import LoginIcon from '@mui/icons-material/Login';
 import { CircularProgress } from '@mui/material';
 import { useForm } from 'react-hook-form'; // Import useForm hook 
-
+import { useMutation } from '@tanstack/react-query'; // Import Mutation
 
 
 const Login = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const { register, handleSubmit, watch, formState: { errors }, reset } = useForm(); // Define in State
-    const { redirectTo, loading } = useSelector((state) => state?.Auth);
-   
+    const { loading } = useSelector((state) => state?.Auth);
+
     // Make Password visibility 
     const [passwordShown, setPasswordShown] = useState(false);
 
@@ -34,44 +34,36 @@ const Login = () => {
     };
 
 
-    const onSubmit = async (data) => {
+    // Function For Mutation
+    const mylog = async (data) => {
 
-        const reg = {
+        const mylogindata = {
             email: data.email,
             password: data.password
-        };
-
-        try {
-            const response = await dispatch(loginRequest(reg))
-            console.log("Loginasaaaaaaaaaaaaa", response);
-            if (response && response?.payload?.status === true) {
-                reset()
-                navigate("/")
-            } else {
-                navigate("/login")
-            }
-        } catch (error) {
-            console.log(error);
         }
-    }
 
-
-
-
-
-    // Redirect if get the token or not get the token 
-    const redirectUser = () => {
-        let token = localStorage.getItem("token")
-        let isInLoginPage = window.location.pathname.toLowerCase() === "/login";
-
-        if (token !== null && token !== undefined && token !== "") {
-            isInLoginPage && navigate("/");
+        const response = await dispatch(loginRequest(mylogindata))
+        console.log("My Login response is ", response);
+        if (response && response?.payload?.status === true) {
+            reset();
+            navigate('/');
+        } else {
+            navigate('/login');
         }
-    }
-    useEffect(() => {
-        redirectUser()
-    }, [redirectTo])
+        return response.data;
+    };
 
+
+    // Start Mutation Area
+    const mutation = useMutation({
+        mutationFn: (data) => mylog(data),
+    });
+
+
+    // Handle On Submit Area
+    const onSubmit = (data) => {
+        mutation.mutate(data);
+    };
 
 
     // If I not use this function then I can't go register page when token will be present in local storage

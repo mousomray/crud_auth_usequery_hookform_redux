@@ -18,19 +18,22 @@ import { useState, useEffect } from "react"; // Import Use State
 import { useDispatch, useSelector } from "react-redux"; // Import Use Dispatch
 import { registerUser } from "../Auth/authslice"; // Import registerUser Function
 import { CircularProgress } from "@mui/material"; // Circle Loader 
+import { useMutation } from "@tanstack/react-query"; // Import Mutation
+
 const defaultTheme = createTheme();
 
 const Signup = () => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
-    const { redirectReg, loading } = useSelector((state) => state?.Auth);
+    const { loading } = useSelector((state) => state?.Auth);
     const { register, handleSubmit, watch, formState: { errors }, reset } = useForm();
     const [image, setImage] = useState(null);
-    //console.log(watch((data) => console.log(data)));
 
-    // Handle form submission
-    const onSubmit = async (data) => {
+    
+    // Function For Mutation
+    const reg = async (data) => {
 
+        // Handling Form Data Area
         const formdata = new FormData();
         formdata.append("name", data.name);
         formdata.append("email", data.email);
@@ -39,29 +42,28 @@ const Signup = () => {
         formdata.append("first_school", data.first_school);
         formdata.append("image", image);
 
-        try {
-            await dispatch(registerUser(formdata))
-            reset()
-            setImage('')
-            navigate("/login")
-        } catch (error) {
-            console.error("Error submitting data:", error);
+        const response = await dispatch(registerUser(formdata))
+        console.log("My Register response is", response);
+        if (response && response?.payload?.status === true) {
+            reset(); // Blank form after submitting data
+            setImage('');
+            navigate("/login");
+        } else {
+            navigate("/register")
         }
+        console.log("My Reg response is ", response);
+        return response.data;
     };
 
-    // For Redirect which is part of Authentication (Start) 
-    const redirectUser = () => {
-        const name = localStorage.getItem('name');
-        const isInLoginPage = window.location.pathname.toLowerCase() === '/signup';
-        if (name !== null && name !== undefined && name !== '') {
-            isInLoginPage && navigate('/login');
-        }
-    };
+    // Start Mutation Area
+    const mutation = useMutation({
+        mutationFn: (data) => reg(data),
+    });
 
-    useEffect(() => {
-        redirectUser();
-    }, [redirectReg]);
-    // For Redirect which is part of Authentication (End) 
+    // Handle On Submit Area
+    const onSubmit = (data) => {
+        mutation.mutate(data);
+    };
 
 
     return (

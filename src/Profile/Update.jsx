@@ -14,6 +14,7 @@ import Container from '@mui/material/Container';
 import LoginIcon from '@mui/icons-material/Login';
 import { CircularProgress } from '@mui/material';
 import { useForm } from 'react-hook-form'; // Import useForm hook 
+import { useMutation } from '@tanstack/react-query';
 
 
 
@@ -23,31 +24,39 @@ const Update = () => {
     const [loading, setLoading] = useState(false);
     const { register, handleSubmit, watch, formState: { errors }, reset } = useForm(); // Define in State
 
-    const onSubmit = async (data) => {
+     // Function For Mutation
+     const myupdate = async (data) => {
 
-        setLoading(true)
-
-        const reg = {
+        const myupdatedata = {
             user_id: data.user_id,
             password: data.password
-        };
-
-        try {
-            const response = await dispatch(update(reg))
-            console.log("update poda", response);
-            if (response && response?.payload?.success === true) {
-                setLoading(false)
-                reset()
-                navigate("/dashboard")
-            } else {
-                setLoading(false)
-            }
-
-        } catch (error) {
-            console.log(error);
-            setLoading(false)
         }
-    }
+
+        const response = await dispatch(update(myupdatedata))
+        console.log("My Update response is ", response);
+        if (response && response?.payload?.success === true) {
+            reset();
+            navigate('/dashboard');
+            setLoading(false);
+        } else {
+            navigate('/update');
+            setLoading(false);
+        }
+        return response.data;
+    };
+
+
+     // Start Mutation Area
+     const mutation = useMutation({
+        mutationFn: (data) => myupdate(data),
+    });
+
+
+    // Handle On Submit Area
+    const onSubmit = (data) => {
+        mutation.mutate(data);
+        setLoading(true);
+    };
 
     return (
         <Layout>

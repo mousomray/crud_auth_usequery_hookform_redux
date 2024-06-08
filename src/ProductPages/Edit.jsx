@@ -18,6 +18,8 @@ import { useState, useEffect } from "react"; // Import Use State
 import { useSelector, useDispatch } from "react-redux"; // Import Use Dispatch
 import { editproduct, detailsproduct } from "./productapi"; // Import registerUser Function
 import { CircularProgress } from "@mui/material"; // Circle Loader 
+import { useQuery } from "@tanstack/react-query";
+
 const defaultTheme = createTheme();
 
 const Edit = () => {
@@ -31,14 +33,13 @@ const Edit = () => {
     const { singledata } = useSelector((state) => state.Single);
     const [image, setImage] = useState(null);
     const [loading, setLoading] = useState(false)
-    //console.log(watch((data) => console.log(data)));
 
 
-    // Get product For Single Value start
+
+    // Get product For Single Value (start)
     const getProduct = async () => {
         try {
             const response = await dispatch(detailsproduct(id));
-
             const reg = {
                 name: response?.payload?.name,
                 price: response?.payload?.price,
@@ -46,18 +47,15 @@ const Edit = () => {
                 brand: response?.payload?.brand,
                 image: response?.payload?.image
             };
-
             reset(reg)
-
         } catch (error) {
             console.log(error);
         }
     };
 
-    useEffect(() => {
-        getProduct();
-    }, []);
-    // Get product For Single Value end
+    useQuery({ queryFn: getProduct }) // This line of code work as same as useEffect()
+    // Get product For Single Value (End)
+
 
 
     // Handle form submission

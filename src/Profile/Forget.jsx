@@ -15,6 +15,7 @@ import Container from '@mui/material/Container';
 import PasswordIcon from '@mui/icons-material/Password';
 import { CircularProgress } from '@mui/material';
 import { useForm } from 'react-hook-form'; // Import useForm hook 
+import { useMutation } from '@tanstack/react-query';
 
 
 
@@ -24,32 +25,40 @@ const Forget = () => {
     const [loading, setLoading] = useState(false);
     const { register, handleSubmit, watch, formState: { errors }, reset } = useForm(); // Define in State
 
-    const onSubmit = async (data) => {
 
-        setLoading(true)
+    // Function For Mutation
+    const myforget = async (data) => {
 
-        const reg = {
+        const myforgetdata = {
             email: data.email,
             first_school: data.first_school,
             newPassword: data.newPassword
-        };
+        }
 
-        try {
-            const response = await dispatch(forget(reg))
-            console.log("Forget poda", response);
-            if (response && response?.payload?.success === true) {
-                setLoading(false)
-                reset()
-                navigate("/login")
-            }else{
-                setLoading(false)
-            }
-
-        } catch (error) {
-            console.log(error);
+        const response = await dispatch(forget(myforgetdata))
+        console.log("My Forget response is ", response);
+        if (response && response?.payload?.success === true) {
+            reset();
+            navigate('/login');
+            setLoading(false)
+        } else {
+            navigate('/forget');
             setLoading(false)
         }
-    }
+        return response.data;
+    };
+
+    // Start Mutation Area
+    const mutation = useMutation({
+        mutationFn: (data) => myforget(data),
+    });
+
+
+     // Handle On Submit Area
+     const onSubmit = (data) => {
+        mutation.mutate(data);
+        setLoading(true)
+    };
 
     return (
         <Layout>

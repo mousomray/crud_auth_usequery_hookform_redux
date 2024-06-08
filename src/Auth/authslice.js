@@ -6,10 +6,8 @@ import { toast } from 'react-toastify';
 const initialState = {
     loading: false,
     user: {}, // for user object
-    redirectTo: null, // For Redirect Page 
     Logouttoggle: false, // For Logout Button 
-    userName: false,
-    redirectReg: null
+    userName: false
 }
 
 export const registerUser = createAsyncThunk("/signup", async (user) => {
@@ -35,7 +33,7 @@ export const loginRequest = createAsyncThunk("login", async (user) => {
         const apiurl = "login"
         const response = await axiosInstance.post(apiurl, user);
         if (response && response?.data?.status === true) {
-             toast.success(response?.data?.message)
+            toast.success(response?.data?.message)
         } else {
             toast.error(response?.data?.message)
         }
@@ -48,12 +46,11 @@ export const loginRequest = createAsyncThunk("login", async (user) => {
     }
 });
 
-
-
 export const AuthSlice = createSlice({
     name: 'user',
     initialState,
     reducers: {
+
         //check for auth token 
         check_token: (state, { payload }) => {
             let token = localStorage.getItem("token");
@@ -62,9 +59,11 @@ export const AuthSlice = createSlice({
             }
         },
 
+        // Logout Toggle
         logout: (state, { payload }) => {
             localStorage.removeItem("token");
             localStorage.removeItem("name");
+            localStorage.removeItem("proimg");
             toast.success("Logout successfully")
             state.Logouttoggle = false
 
@@ -75,21 +74,7 @@ export const AuthSlice = createSlice({
         RegLog: (state, { payload }) => {
             localStorage.removeItem("name");
             state.Logouttoggle = false
-
         },
-
-
-        // Redirect after login
-        redirectToo: (state, { payload }) => {
-            state.redirectTo = payload
-        },
-
-        // Redirect Register page
-        redirectTo_Register: (state, { payload }) => {
-            state.redirectReg = payload
-        }
-
-
     },
 
     extraReducers: (builder) => {
@@ -105,12 +90,11 @@ export const AuthSlice = createSlice({
             //For Registration Fulfilled
             .addCase(registerUser.fulfilled, (state, { payload }) => {
                 state.loading = false;
-                
+
                 console.log("My Payload is ..", payload);
-                
+
                 if (payload && payload?.status === true) { // Check if payload exists
                     localStorage.setItem("name", payload.data.name);
-                    state.redirectReg = "/login";
                     toast.success(`Hi ${payload?.data?.name}, ${payload?.message}`);
                 }
             })
@@ -125,9 +109,11 @@ export const AuthSlice = createSlice({
 
         // Login Request
         builder
+
             .addCase(loginRequest.pending, (state, action) => {
                 state.loading = true;
             })
+
             .addCase(loginRequest.fulfilled, (state, { payload }) => {
                 state.loading = false;
                 if (payload?.status === true) {
@@ -135,10 +121,10 @@ export const AuthSlice = createSlice({
                     localStorage.setItem("name", payload?.user.name);
                     localStorage.setItem("proimg", payload?.user?.image)
                     state.Logouttoggle = true;
-                    state.redirectTo = "/";
                     toast.success(`Hi ${payload?.user.name}, ${payload?.message}`);
                 }
             })
+
             .addCase(loginRequest.rejected, (state, action) => {
                 state.loading = false;
             });
@@ -146,5 +132,4 @@ export const AuthSlice = createSlice({
 
 })
 
-export const {
-    check_token, redirectToo, logout, redirectTo_Register, RegLog } = AuthSlice.actions
+export const { check_token, logout, RegLog } = AuthSlice.actions

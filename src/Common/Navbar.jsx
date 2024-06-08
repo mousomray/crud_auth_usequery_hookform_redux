@@ -156,7 +156,7 @@ function Navbar() {
                                 <>
                                     <Tooltip title="Open settings">
                                         <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                                            <Avatar alt="Remy Sharp" src={
+                                            <Avatar alt={name} src={
                                                 proimg
                                                     ? profile_pic(proimg)
                                                     : "error"

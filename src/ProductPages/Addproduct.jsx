@@ -29,7 +29,7 @@ const Addproduct = () => {
     
     const [image, setImage] = useState(null); // For Image
     const [loading, setLoading] = useState(false) // For Loading
-    //console.log(watch((data) => console.log(data)));
+    
 
     // Handle form submission
     const onSubmit = async (data) => {
